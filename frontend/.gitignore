@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Production build
+build/
+
+# Audit reports
+audit-reports/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local

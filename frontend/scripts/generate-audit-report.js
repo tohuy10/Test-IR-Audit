@@ -42,6 +42,18 @@ try {
   }
 }
 
+// Load package.json for dependency type lookup
+let pkgJson = {};
+try {
+  pkgJson = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
+} catch (e) {}
+
+function getDepType(pkgName) {
+  if (pkgJson.devDependencies && pkgJson.devDependencies[pkgName]) return 'devDependency';
+  if (pkgJson.dependencies && pkgJson.dependencies[pkgName]) return 'dependency';
+  return 'transitive';
+}
+
 // Extract vulnerability stats
 const vulns = auditData.vulnerabilities || {};
 const auditSummary = auditData.metadata?.vulnerabilities || {
@@ -62,7 +74,7 @@ const outdatedRows = Object.keys(outdatedData).map(pkg => {
     current: info.current || 'N/A',
     wanted: info.wanted || 'N/A',
     latest: info.latest || 'N/A',
-    type: info.type || 'dependency',
+    type: getDepType(pkg),
     repoUrl
   };
 });
@@ -84,72 +96,172 @@ const vulnRows = Object.keys(vulns).map(pkg => {
   };
 });
 
+// Sort Vulnerabilities by Severity Priority: Critical -> High -> Moderate -> Low -> Info
+const severityRank = {
+  critical: 1,
+  high: 2,
+  moderate: 3,
+  low: 4,
+  info: 5,
+  unknown: 6
+};
+
+vulnRows.sort((a, b) => {
+  const rankA = severityRank[a.severity.toLowerCase()] || 99;
+  const rankB = severityRank[b.severity.toLowerCase()] || 99;
+  if (rankA !== rankB) {
+    return rankA - rankB;
+  }
+  return a.package.localeCompare(b.package);
+});
+
 // Generate HTML Report
 const timestamp = new Date().toISOString();
 const htmlContent = `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MAX FE Audit Report</title>
   <style>
     :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --table-header-bg: #f1f5f9;
+      --table-hover: #f8fafc;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+      --title-color: #0284c7;
+      --critical: #dc2626;
+      --critical-bg: #fef2f2;
+      --high: #ea580c;
+      --high-bg: #fff7ed;
+      --moderate: #d97706;
+      --moderate-bg: #fffbeb;
+      --low: #2563eb;
+      --low-bg: #eff6ff;
+      --outdated: #9333ea;
+      --outdated-bg: #faf5ff;
+      --success: #16a34a;
+      --link: #0284c7;
+      --code-bg: #f1f5f9;
+    }
+
+    [data-theme="dark"] {
       --bg: #0f172a;
       --card-bg: #1e293b;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
+      --table-header-bg: #0f172a;
+      --table-hover: #334155;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --title-color: #38bdf8;
       --critical: #ef4444;
+      --critical-bg: rgba(239, 68, 68, 0.15);
       --high: #f97316;
+      --high-bg: rgba(249, 115, 22, 0.15);
       --moderate: #eab308;
+      --moderate-bg: rgba(234, 179, 8, 0.15);
       --low: #3b82f6;
+      --low-bg: rgba(59, 130, 246, 0.15);
+      --outdated: #a855f7;
+      --outdated-bg: rgba(168, 85, 247, 0.15);
       --success: #22c55e;
+      --link: #38bdf8;
+      --code-bg: #0f172a;
     }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 24px;
+      padding: 32px 24px;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
     .container {
       max-width: 1200px;
       margin: 0 auto;
     }
     .header {
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
       margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: var(--shadow);
     }
     .header h1 {
       margin: 0;
-      font-size: 24px;
-      color: #38bdf8;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--title-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
     .timestamp {
       color: var(--text-muted);
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .theme-toggle {
+      background: var(--table-header-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .theme-toggle:hover {
+      border-color: var(--link);
+      color: var(--link);
     }
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     .stat-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
+      border-radius: 10px;
+      padding: 18px 16px;
       text-align: center;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+    .stat-card .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
     }
     .stat-card .number {
       font-size: 32px;
-      font-weight: bold;
-      margin-top: 8px;
+      font-weight: 800;
+      margin-top: 6px;
+      line-height: 1;
     }
     .stat-card.critical { border-top: 4px solid var(--critical); }
     .stat-card.critical .number { color: var(--critical); }
@@ -159,53 +271,75 @@ const htmlContent = `<!DOCTYPE html>
     .stat-card.moderate .number { color: var(--moderate); }
     .stat-card.low { border-top: 4px solid var(--low); }
     .stat-card.low .number { color: var(--low); }
-    .stat-card.outdated { border-top: 4px solid #a855f7; }
-    .stat-card.outdated .number { color: #a855f7; }
+    .stat-card.outdated { border-top: 4px solid var(--outdated); }
+    .stat-card.outdated .number { color: var(--outdated); }
 
     section {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
+      border-radius: 12px;
+      padding: 24px;
       margin-bottom: 24px;
+      box-shadow: var(--shadow);
     }
     h2 {
       margin-top: 0;
-      font-size: 18px;
+      font-size: 17px;
+      font-weight: 700;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 10px;
+      padding-bottom: 12px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 12px;
+      margin-top: 16px;
       text-align: left;
     }
     th, td {
-      padding: 12px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--border);
-      font-size: 14px;
+      font-size: 13.5px;
     }
     th {
-      background: #0f172a;
+      background: var(--table-header-bg);
       color: var(--text-muted);
+      font-weight: 600;
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    tbody tr:hover {
+      background-color: var(--table-hover);
+    }
+    code {
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px;
     }
     .badge {
       display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: bold;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
-    .badge.critical { background: rgba(239, 68, 68, 0.2); color: var(--critical); }
-    .badge.high { background: rgba(249, 115, 22, 0.2); color: var(--high); }
-    .badge.moderate { background: rgba(234, 179, 8, 0.2); color: var(--moderate); }
-    .badge.low { background: rgba(59, 130, 246, 0.2); color: var(--low); }
+    .badge.critical { background: var(--critical-bg); color: var(--critical); border: 1px solid var(--critical); }
+    .badge.high { background: var(--high-bg); color: var(--high); border: 1px solid var(--high); }
+    .badge.moderate { background: var(--moderate-bg); color: var(--moderate); border: 1px solid var(--moderate); }
+    .badge.low { background: var(--low-bg); color: var(--low); border: 1px solid var(--low); }
     
     a {
-      color: #38bdf8;
+      color: var(--link);
       text-decoration: none;
+      font-weight: 500;
     }
     a:hover {
       text-decoration: underline;
@@ -217,30 +351,33 @@ const htmlContent = `<!DOCTYPE html>
     <div class="header">
       <div>
         <h1>🛡️ MAX FE Audit Report</h1>
-        <p style="margin:4px 0 0; color: var(--text-muted);">Generated automatically by Jenkins Pipeline</p>
+        <p style="margin:4px 0 0; color: var(--text-muted); font-size: 13px;">Generated automatically by Jenkins Pipeline</p>
       </div>
-      <div class="timestamp">Generated: ${timestamp}</div>
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">☀️ Light Mode</button>
+        <div class="timestamp">Generated: ${timestamp}</div>
+      </div>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card critical">
-        <div>Critical Vulnerabilities</div>
+        <div class="label">Critical Vulnerabilities</div>
         <div class="number">${auditSummary.critical || 0}</div>
       </div>
       <div class="stat-card high">
-        <div>High Vulnerabilities</div>
+        <div class="label">High Vulnerabilities</div>
         <div class="number">${auditSummary.high || 0}</div>
       </div>
       <div class="stat-card moderate">
-        <div>Moderate Vulnerabilities</div>
+        <div class="label">Moderate Vulnerabilities</div>
         <div class="number">${auditSummary.moderate || 0}</div>
       </div>
       <div class="stat-card low">
-        <div>Low Vulnerabilities</div>
+        <div class="label">Low Vulnerabilities</div>
         <div class="number">${auditSummary.low || 0}</div>
       </div>
       <div class="stat-card outdated">
-        <div>Outdated Libraries</div>
+        <div class="label">Outdated Libraries</div>
         <div class="number">${outdatedRows.length}</div>
       </div>
     </div>
@@ -295,7 +432,7 @@ const htmlContent = `<!DOCTYPE html>
               <td><strong>${r.package}</strong></td>
               <td><code>${r.current}</code></td>
               <td><code>${r.wanted}</code></td>
-              <td><strong style="color:#a855f7">${r.latest}</strong></td>
+              <td><strong style="color:var(--outdated);">${r.latest}</strong></td>
               <td>${r.type}</td>
               <td><a href="${r.repoUrl}" target="_blank" rel="noopener">View Repo ↗</a></td>
             </tr>
@@ -305,6 +442,28 @@ const htmlContent = `<!DOCTYPE html>
       `}
     </section>
   </div>
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const themeBtn = document.getElementById('themeBtn');
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.setAttribute('data-theme', 'light');
+        themeBtn.innerHTML = '☀️ Light Mode';
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        themeBtn.innerHTML = '🌙 Dark Mode';
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    // Load saved theme preference if available
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const btn = document.getElementById('themeBtn');
+      if (btn) btn.innerHTML = savedTheme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode';
+    }
+  </script>
 </body>
 </html>`;
 
