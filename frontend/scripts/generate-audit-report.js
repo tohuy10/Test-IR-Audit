@@ -79,19 +79,41 @@ const outdatedRows = Object.keys(outdatedData).map(pkg => {
   };
 });
 
+// Helper to get installed version for a package
+function getInstalledVersion(pkgName) {
+  if (outdatedData[pkgName] && outdatedData[pkgName].current) {
+    return outdatedData[pkgName].current;
+  }
+  try {
+    const pkgPath = path.join(projectRoot, 'node_modules', pkgName, 'package.json');
+    if (fs.existsSync(pkgPath)) {
+      const p = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      return p.version || 'Installed';
+    }
+  } catch (e) {}
+  return 'Installed';
+}
+
 // Prepare rows for Vulnerable Packages
 const vulnRows = Object.keys(vulns).map(pkg => {
   const v = vulns[pkg];
   const repoUrl = `https://www.npmjs.com/package/${pkg}`;
   const severity = v.severity || 'unknown';
-  const fixAvailable = v.fixAvailable ? (typeof v.fixAvailable === 'object' ? v.fixAvailable.name + '@' + v.fixAvailable.version : 'Yes') : 'Manual Review';
+  
+  let fixAvailableText = '🛠️ Manual Review';
+  if (v.fixAvailable === true) {
+    fixAvailableText = '⚡ Automatic fix (run npm audit fix)';
+  } else if (typeof v.fixAvailable === 'object' && v.fixAvailable !== null) {
+    fixAvailableText = `⬆️ Upgrade ${v.fixAvailable.name} to v${v.fixAvailable.version}`;
+  }
   
   return {
     package: pkg,
+    installedVersion: getInstalledVersion(pkg),
     severity,
     via: Array.isArray(v.via) ? v.via.map(item => typeof item === 'string' ? item : item.title).join(', ') : 'Direct/Indirect',
     range: v.range || 'N/A',
-    fixAvailable,
+    fixAvailable: fixAvailableText,
     repoUrl
   };
 });
@@ -390,6 +412,7 @@ const htmlContent = `<!DOCTYPE html>
           <tr>
             <th>Package</th>
             <th>Severity</th>
+            <th>Installed Version</th>
             <th>Vulnerability Issue / Via</th>
             <th>Affected Version Range</th>
             <th>Recommended Action / Fix</th>
@@ -401,6 +424,7 @@ const htmlContent = `<!DOCTYPE html>
             <tr>
               <td><strong>${r.package}</strong></td>
               <td><span class="badge ${r.severity}">${r.severity}</span></td>
+              <td><code>${r.installedVersion}</code></td>
               <td>${r.via}</td>
               <td><code>${r.range}</code></td>
               <td>${r.fixAvailable}</td>
