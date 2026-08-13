@@ -1,0 +1,21 @@
+{
+  "name": "max-fe",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --watchAll=false",
+    "audit:report": "node scripts/generate-audit-report.js"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "axios": "^0.21.1",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "npm-check-updates": "^16.14.0"
+  }
+}

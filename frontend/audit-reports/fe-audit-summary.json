@@ -1,0 +1,12 @@
+{
+  "auditSummary": {
+    "info": 0,
+    "low": 9,
+    "moderate": 5,
+    "high": 26,
+    "critical": 1,
+    "total": 41
+  },
+  "outdatedCount": 5,
+  "timestamp": "2026-08-13T02:51:39.797Z"
+}

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAX FE Audit Report</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --critical: #ef4444;
+      --high: #f97316;
+      --moderate: #eab308;
+      --low: #3b82f6;
+      --success: #22c55e;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 24px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #38bdf8;
+    }
+    .timestamp {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-card .number {
+      font-size: 32px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .stat-card.critical { border-top: 4px solid var(--critical); }
+    .stat-card.critical .number { color: var(--critical); }
+    .stat-card.high { border-top: 4px solid var(--high); }
+    .stat-card.high .number { color: var(--high); }
+    .stat-card.moderate { border-top: 4px solid var(--moderate); }
+    .stat-card.moderate .number { color: var(--moderate); }
+    .stat-card.low { border-top: 4px solid var(--low); }
+    .stat-card.low .number { color: var(--low); }
+    .stat-card.outdated { border-top: 4px solid #a855f7; }
+    .stat-card.outdated .number { color: #a855f7; }
+
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      text-align: left;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    th {
+      background: #0f172a;
+      color: var(--text-muted);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .badge.critical { background: rgba(239, 68, 68, 0.2); color: var(--critical); }
+    .badge.high { background: rgba(249, 115, 22, 0.2); color: var(--high); }
+    .badge.moderate { background: rgba(234, 179, 8, 0.2); color: var(--moderate); }
+    .badge.low { background: rgba(59, 130, 246, 0.2); color: var(--low); }
+    
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>🛡️ MAX FE Audit Report</h1>
+        <p style="margin:4px 0 0; color: var(--text-muted);">Generated automatically by Jenkins Pipeline</p>
+      </div>
+      <div class="timestamp">Generated: 2026-08-13T02:51:39.797Z</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card critical">
+        <div>Critical Vulnerabilities</div>
+        <div class="number">1</div>
+      </div>
+      <div class="stat-card high">
+        <div>High Vulnerabilities</div>
+        <div class="number">26</div>
+      </div>
+      <div class="stat-card moderate">
+        <div>Moderate Vulnerabilities</div>
+        <div class="number">5</div>
+      </div>
+      <div class="stat-card low">
+        <div>Low Vulnerabilities</div>
+        <div class="number">9</div>
+      </div>
+      <div class="stat-card outdated">
+        <div>Outdated Libraries</div>
+        <div class="number">5</div>
+      </div>
+    </div>
+
+    <section>
+      <h2>⚠️ Vulnerable Dependencies (41)</h2>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Package</th>
+            <th>Severity</th>
+            <th>Vulnerability Issue / Via</th>
+            <th>Affected Version Range</th>
+            <th>Recommended Action / Fix</th>
+            <th>Repository / Docs</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>@jest/core</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>jest-config, jest-runner</td>
+              <td><code>27.0.1 - 27.5.1</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/@jest/core" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>@npmcli/run-script</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>node-gyp</td>
+              <td><code>1.1.1 - 9.0.1</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/@npmcli/run-script" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>@sigstore/sign</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>make-fetch-happen</td>
+              <td><code><=2.3.2</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/@sigstore/sign" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>@sigstore/tuf</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>tuf-js</td>
+              <td><code><=2.3.4</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/@sigstore/tuf" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>@svgr/plugin-svgo</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>svgo</td>
+              <td><code><=5.5.0</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/@svgr/plugin-svgo" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>@svgr/webpack</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>@svgr/plugin-svgo</td>
+              <td><code>4.0.0 - 5.5.0</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/@svgr/webpack" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>@tootallnate/once</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>@tootallnate/once vulnerable to Incorrect Control Flow Scoping</td>
+              <td><code><2.0.1</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/@tootallnate/once" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>axios</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>Axios Cross-Site Request Forgery Vulnerability, axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL, Axios has a NO_PROXY Hostname Normalization Bypass that Leads to SSRF, Axios: Authentication Bypass via Prototype Pollution Gadget in `validateStatus` Merge Strategy, Axios: Incomplete Fix for CVE-2025-62718 — NO_PROXY Protection Bypassed via RFC 1122 Loopback Subnet (127.0.0.0/8) in Axios 1.15.0, Axios: Null Byte Injection via Reverse-Encoding in AxiosURLSearchParams, Axios: no_proxy bypass via IP alias allows SSRF, Axios' HTTP adapter-streamed uploads bypass maxBodyLength when maxRedirects: 0, Axios: HTTP adapter streamed responses bypass maxContentLength, Axios: Prototype Pollution Gadgets - Response Tampering, Data Exfiltration, and Request Hijacking, Axios: Header Injection via Prototype Pollution, Axios: XSRF Token Cross-Origin Leakage via Prototype Pollution Gadget in `withXSRFToken` Boolean Coercion, Axios is Vulnerable to Denial of Service via __proto__ Key in mergeConfig, Axios has Unrestricted Cloud Metadata Exfiltration via Header Injection Chain, Axios: unbounded recursion in toFormData causes DoS via deeply nested request data, Axios: Regular Expression Denial of Service (ReDoS) via Cookie Name Injection, Axios: Proxy-Authorization Credential Leak to Origin Server Across HTTP-to-HTTPS Redirect in Axios Node.js HTTP Adapter, Axios: Proxy-Authorization header leaks to redirect target when proxy is re-evaluated to direct connection, axios Vulnerable to Credential Theft and Response Hijacking via Prototype Pollution Gadget in Config Merge, axios has DoS & Header Injection via Prototype Pollution Read-Side Gadgets in axios merge functions, axios's shouldBypassProxy does not recognize IPv4-mapped IPv6 addresses, allowing NO_PROXY bypass (incomplete fix for CVE-2025-62718), Axios: Prototype pollution gadgets can alter axios request construction, Axios: Nested axios option objects can consume polluted prototype values</td>
+              <td><code><=0.32.0</code></td>
+              <td>axios@1.19.0</td>
+              <td><a href="https://www.npmjs.com/package/axios" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>bfj</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>jsonpath</td>
+              <td><code>7.1.0 - 9.1.2</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/bfj" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>cacache</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>tar</td>
+              <td><code>14.0.0 - 18.0.4</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/cacache" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>css-minimizer-webpack-plugin</strong></td>
+              <td><span class="badge moderate">moderate</span></td>
+              <td>serialize-javascript</td>
+              <td><code>1.1.4 - 7.0.4</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/css-minimizer-webpack-plugin" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>css-select</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>nth-check</td>
+              <td><code><=3.1.0</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/css-select" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>http-proxy-agent</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>@tootallnate/once</td>
+              <td><code>4.0.1</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/http-proxy-agent" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>jest</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>@jest/core, jest-cli</td>
+              <td><code>27.0.1 - 27.5.1</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/jest" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>jest-cli</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>@jest/core, jest-config</td>
+              <td><code>27.0.1 - 27.5.1</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/jest-cli" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>jest-config</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>jest-environment-jsdom, jest-runner</td>
+              <td><code>27.0.1 - 27.5.1</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/jest-config" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>jest-environment-jsdom</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>jsdom</td>
+              <td><code>27.0.1 - 27.5.1</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/jest-environment-jsdom" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>jest-runner</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>jest-environment-jsdom</td>
+              <td><code>27.0.4 - 27.5.1</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/jest-runner" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>jsdom</strong></td>
+              <td><span class="badge low">low</span></td>
+              <td>http-proxy-agent</td>
+              <td><code>16.6.0 - 17.0.0</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/jsdom" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>jsonpath</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>underscore</td>
+              <td><code>*</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/jsonpath" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>make-fetch-happen</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>cacache</td>
+              <td><code>7.1.1 - 14.0.0</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/make-fetch-happen" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>node-gyp</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>make-fetch-happen, tar</td>
+              <td><code><=10.3.1</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/node-gyp" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>npm-check-updates</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>make-fetch-happen, pacote</td>
+              <td><code>16.7.5 - 17.0.0-8</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/npm-check-updates" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>npm-registry-fetch</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>make-fetch-happen</td>
+              <td><code>7.0.0 - 18.0.0</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/npm-registry-fetch" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>nth-check</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>Inefficient Regular Expression Complexity in nth-check</td>
+              <td><code><2.0.1</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/nth-check" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>pacote</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>@npmcli/run-script, cacache, npm-registry-fetch, sigstore, tar</td>
+              <td><code>5.0.0 - 21.0.0</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/pacote" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>postcss</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>PostCSS line return parsing error, PostCSS has XSS via Unescaped </style> in its CSS Stringify Output, PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments, PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure, PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset</td>
+              <td><code><=8.5.22</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/postcss" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>react-scripts</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>@svgr/webpack, css-minimizer-webpack-plugin, jest, resolve-url-loader, webpack-dev-server, workbox-webpack-plugin</td>
+              <td><code>>=0.1.0</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/react-scripts" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>resolve-url-loader</strong></td>
+              <td><span class="badge moderate">moderate</span></td>
+              <td>postcss</td>
+              <td><code>0.0.1-experiment-postcss || 3.0.0-alpha.1 - 4.0.0</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/resolve-url-loader" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>rollup-plugin-terser</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>serialize-javascript</td>
+              <td><code>3.0.0 || >=4.0.4</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/rollup-plugin-terser" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>serialize-javascript</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>Serialize JavaScript is Vulnerable to RCE via RegExp.flags and Date.prototype.toISOString(), Serialize JavaScript has CPU Exhaustion Denial of Service via crafted array-like objects</td>
+              <td><code><=7.0.4</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/serialize-javascript" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>sigstore</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>@sigstore/sign, @sigstore/tuf, sigstore's `certificateOIDs` verification constraints are silently dropped and never enforced, make-fetch-happen</td>
+              <td><code><=4.1.0</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/sigstore" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>sockjs</strong></td>
+              <td><span class="badge moderate">moderate</span></td>
+              <td>uuid</td>
+              <td><code>>=0.3.17</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/sockjs" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>svgo</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>SVGO removeScripts plugin leaves some executable scripts intact, css-select</td>
+              <td><code>1.0.0 - 2.8.2</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/svgo" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>tar</strong></td>
+              <td><span class="badge critical">critical</span></td>
+              <td>node-tar Vulnerable to Arbitrary File Creation/Overwrite via Hardlink Path Traversal, node-tar is Vulnerable to Arbitrary File Overwrite and Symlink Poisoning via Insufficient Path Sanitization, Arbitrary File Read/Write via Hardlink Target Escape Through Symlink Chain in node-tar Extraction, tar has Hardlink Path Traversal via Drive-Relative Linkpath, node-tar Symlink Path Traversal via Drive-Relative Linkpath, Race Condition in node-tar Path Reservations via Unicode Ligature Collisions on macOS APFS, node-tar applies PAX size override to intermediary GNU long-name/long-link headers, causing tar parser interpretation differential (file smuggling), node-tar: Process crash via PAX numeric path type confusion, node-tar: Decompression/parse DoS via unlimited input, node-tar: Negative tar entry size causes infinite loop in archive replace, node-tar: Uncaught Exception DoS via NUL byte in PAX path/linkpath records, node-tar: Uncontrolled recursion in mapHas/filesFilter allows uncatchable stack-overflow DoS via crafted long-path tar with member selection</td>
+              <td><code><=7.5.20</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/tar" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>tuf-js</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>make-fetch-happen</td>
+              <td><code><=2.2.1</code></td>
+              <td>npm-check-updates@23.0.2</td>
+              <td><a href="https://www.npmjs.com/package/tuf-js" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>underscore</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>Underscore has unlimited recursion in _.flatten and _.isEqual, potential for DoS attack</td>
+              <td><code><=1.13.7</code></td>
+              <td>Yes</td>
+              <td><a href="https://www.npmjs.com/package/underscore" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>uuid</strong></td>
+              <td><span class="badge moderate">moderate</span></td>
+              <td>uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided</td>
+              <td><code><11.1.1</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/uuid" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>webpack-dev-server</strong></td>
+              <td><span class="badge moderate">moderate</span></td>
+              <td>webpack-dev-server users' source code may be stolen when they access a malicious web site with non-Chromium based browser, webpack-dev-server users' source code may be stolen when they access a malicious web site, webpack-dev-server vulnerable to cross-origin source code exposure on non-HTTPS origins, webpack-dev-server vulnerable to HMR WebSocket interception via permissive user proxies, webpack-dev-server vulnerable to cross-site request forgery via internal developer endpoints, webpack-dev-server vulnerable to denial of service via a malformed Host or Origin header, sockjs</td>
+              <td><code><=5.2.6</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/webpack-dev-server" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>workbox-build</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>rollup-plugin-terser</td>
+              <td><code>5.0.0-alpha.0 - 7.0.0</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/workbox-build" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>workbox-webpack-plugin</strong></td>
+              <td><span class="badge high">high</span></td>
+              <td>workbox-build</td>
+              <td><code>5.0.0-alpha.0 - 7.0.0</code></td>
+              <td>react-scripts@0.0.0</td>
+              <td><a href="https://www.npmjs.com/package/workbox-webpack-plugin" target="_blank" rel="noopener">View Package ↗</a></td>
+            </tr>
+          
+        </tbody>
+      </table>
+      
+    </section>
+
+    <section>
+      <h2>📦 Outdated Dependencies (5)</h2>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Package Name</th>
+            <th>Current Version</th>
+            <th>Wanted Version</th>
+            <th>Latest Version</th>
+            <th>Type</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>axios</strong></td>
+              <td><code>N/A</code></td>
+              <td><code>0.21.4</code></td>
+              <td><strong style="color:#a855f7">1.19.0</strong></td>
+              <td>dependency</td>
+              <td><a href="https://www.npmjs.com/package/axios" target="_blank" rel="noopener">View Repo ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>lodash</strong></td>
+              <td><code>N/A</code></td>
+              <td><code>4.18.1</code></td>
+              <td><strong style="color:#a855f7">4.18.1</strong></td>
+              <td>dependency</td>
+              <td><a href="https://www.npmjs.com/package/lodash" target="_blank" rel="noopener">View Repo ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>react</strong></td>
+              <td><code>N/A</code></td>
+              <td><code>18.3.1</code></td>
+              <td><strong style="color:#a855f7">19.2.8</strong></td>
+              <td>dependency</td>
+              <td><a href="https://www.npmjs.com/package/react" target="_blank" rel="noopener">View Repo ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>react-dom</strong></td>
+              <td><code>N/A</code></td>
+              <td><code>18.3.1</code></td>
+              <td><strong style="color:#a855f7">19.2.8</strong></td>
+              <td>dependency</td>
+              <td><a href="https://www.npmjs.com/package/react-dom" target="_blank" rel="noopener">View Repo ↗</a></td>
+            </tr>
+          
+            <tr>
+              <td><strong>react-scripts</strong></td>
+              <td><code>N/A</code></td>
+              <td><code>5.0.1</code></td>
+              <td><strong style="color:#a855f7">5.0.1</strong></td>
+              <td>dependency</td>
+              <td><a href="https://www.npmjs.com/package/react-scripts" target="_blank" rel="noopener">View Repo ↗</a></td>
+            </tr>
+          
+        </tbody>
+      </table>
+      
+    </section>
+  </div>
+</body>
+</html>
