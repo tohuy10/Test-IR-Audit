@@ -88,10 +88,12 @@ function getInstalledVersion(pkgName) {
     const pkgPath = path.join(projectRoot, 'node_modules', pkgName, 'package.json');
     if (fs.existsSync(pkgPath)) {
       const p = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-      return p.version || 'Installed';
+      if (p.version) return p.version;
     }
   } catch (e) {}
-  return 'Installed';
+
+  const hasNodeModules = fs.existsSync(path.join(projectRoot, 'node_modules'));
+  return hasNodeModules ? 'Transitive' : 'Not Installed (No node_modules)';
 }
 
 // Prepare rows for Vulnerable Packages
